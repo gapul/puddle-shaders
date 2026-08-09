@@ -11,6 +11,7 @@ import html
 import json
 import shutil
 import sys
+import urllib.parse
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -42,6 +43,12 @@ a { color: inherit; }
 }
 .card img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; background: var(--line); }
 .card .body { padding: .8rem 1rem 1rem; }
+.card .row { display: flex; align-items: center; justify-content: space-between; gap: .5rem; margin-top: .6rem; }
+.card .go { font-size: .8rem; color: var(--muted); }
+.mini {
+    padding: .3rem .7rem; border-radius: .4rem; background: var(--fg); color: var(--bg);
+    text-decoration: none; font-size: .8rem; font-weight: 600;
+}
 .card h2 { font-size: 1rem; margin: 0 0 .2rem; }
 .card p { margin: 0; font-size: .85rem; color: var(--muted); }
 .hero img, .hero video { display: block; width: 100%; border-radius: .7rem; border: 1px solid var(--line); }
@@ -51,6 +58,12 @@ pre {
     padding: .8rem 1rem; overflow-x: auto; font-size: .85rem;
 }
 .back { display: inline-block; margin-bottom: 1.5rem; color: var(--muted); text-decoration: none; }
+.install {
+    display: inline-block; margin: .2rem 0 .8rem; padding: .6rem 1.2rem; border-radius: .5rem;
+    background: var(--fg); color: var(--bg); text-decoration: none; font-weight: 600;
+}
+.install:hover { opacity: .85; }
+.aside { margin-top: .2rem; }
 """
 
 
@@ -89,13 +102,17 @@ def main():
     (SITE / "w").mkdir(parents=True)
 
     cards = "\n".join(
-        f"""<a class="card" href="w/{e['id']}.html">
-    <img src="{html.escape(e['preview'])}" alt="" loading="lazy">
+        f"""<div class="card">
+    <a href="w/{e['id']}.html"><img src="{html.escape(e['preview'])}" alt="" loading="lazy"></a>
     <div class="body">
         <h2>{html.escape(e['name'])}</h2>
         <p>{html.escape(e.get('description', ''))}</p>
+        <div class="row">
+            <a class="go" href="w/{e['id']}.html">Details →</a>
+            <a class="mini" href="puddle:install?url={urllib.parse.quote(e['url'], safe='')}">Install</a>
+        </div>
     </div>
-</a>"""
+</div>"""
         for e in entries
     )
 
@@ -119,6 +136,10 @@ Install them from the app's catalog, or one at a time from a terminal.</p>
 <p class="meta">by {html.escape(entry.get('author', 'unknown'))}</p>
 <p>{html.escape(entry.get('description', ''))}</p>
 <h2>Install</h2>
+<a class="install" href="puddle:install?url={urllib.parse.quote(entry['url'], safe='')}">Install in Puddle</a>
+<p class="meta aside">Hands it to Puddle, which asks before downloading. The address is
+passed straight through, so this works whether or not you have this catalog configured.</p>
+<p class="meta">From a terminal instead:</p>
 <pre>{html.escape(install)}</pre>
 <p class="meta">Or in Puddle: <b>Wallpapers → Browse</b>. The asset is
 <a href="{html.escape(entry['url'])}">{html.escape(entry['url'].rsplit('/', 1)[-1])}</a>,
