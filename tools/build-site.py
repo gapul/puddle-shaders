@@ -44,7 +44,7 @@ a { color: inherit; }
 .card .body { padding: .8rem 1rem 1rem; }
 .card h2 { font-size: 1rem; margin: 0 0 .2rem; }
 .card p { margin: 0; font-size: .85rem; color: var(--muted); }
-.hero img { width: 100%; border-radius: .7rem; border: 1px solid var(--line); }
+.hero img, .hero video { display: block; width: 100%; border-radius: .7rem; border: 1px solid var(--line); }
 .meta { color: var(--muted); font-size: .9rem; }
 pre {
     background: var(--card); border: 1px solid var(--line); border-radius: .5rem;
@@ -52,6 +52,19 @@ pre {
 }
 .back { display: inline-block; margin-bottom: 1.5rem; color: var(--muted); text-decoration: none; }
 """
+
+
+def hero(entry):
+    """The moving one where there is one — these wallpapers are motion, and a still frame of a
+    drifting field says very little. The grid stays on still images so a page of nine does not
+    fetch nine videos."""
+    if animation := entry.get("animation"):
+        return (
+            f'<video src="{html.escape(animation)}" poster="{html.escape(entry["preview"])}"'
+            ' autoplay loop muted playsinline></video>'
+        )
+
+    return f'<img src="{html.escape(entry["preview"])}" alt="">'
 
 
 def page(title, body):
@@ -101,7 +114,7 @@ Install them from the app's catalog, or one at a time from a terminal.</p>
         (SITE / "w" / f"{entry['id']}.html").write_text(page(
             f"{entry['name']} — {index['name']}",
             f"""<a class="back" href="../">← all wallpapers</a>
-<div class="hero"><img src="{html.escape(entry['preview'])}" alt=""></div>
+<div class="hero">{hero(entry)}</div>
 <h1>{html.escape(entry['name'])}</h1>
 <p class="meta">by {html.escape(entry.get('author', 'unknown'))}</p>
 <p>{html.escape(entry.get('description', ''))}</p>

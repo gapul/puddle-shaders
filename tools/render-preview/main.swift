@@ -1,11 +1,19 @@
 import AppKit
+import ImageIO
 import Metal
+import UniformTypeIdentifiers
 
 // Renders one frame of a wallpaper shader to a PNG, the way Puddle would: the contract preamble
 // prepended, quoted includes spliced in, the same uniform layout bound to buffer(0).
 //
 //   swiftc -O -o render-preview tools/render-preview/main.swift
 //   ./render-preview <preamble.metal> <shader.metal> <out.png> [width] [height] [time]
+//   ./render-preview <preamble.metal> <shader.metal> <out.png> [width] [height] [start] [frames] [fps]
+//
+// With a frame count it writes an APNG instead: these wallpapers move, and a still frame of a
+// drifting field says very little about what it is like to live with. The loop is a window on
+// the shader's clock rather than a true cycle — almost none of them are periodic — so it cuts
+// when it wraps.
 
 struct Uniforms {
     var time: Float
@@ -59,6 +67,8 @@ let output = URL(fileURLWithPath: arguments[3])
 let width = arguments.count > 4 ? Int(arguments[4])! : 960
 let height = arguments.count > 5 ? Int(arguments[5])! : 600
 let time = arguments.count > 6 ? Float(arguments[6])! : 8
+let frameCount = arguments.count > 7 ? Int(arguments[7])! : 1
+let fps = arguments.count > 8 ? Double(arguments[8])! : 12
 
 let device = MTLCreateSystemDefaultDevice()!
 let library = try device.makeLibrary(source: "\(preamble)\n\(source)", options: nil)
@@ -73,9 +83,10 @@ let texture = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: .bgra8Unorm,
 texture.usage = [.renderTarget, .shaderRead]
 let target = device.makeTexture(descriptor: texture)!
 
+func render(at moment: Float) -> CGImage {
 var uniforms = Uniforms(
-    time: time,
-    frame: UInt32(time * 24),
+    time: moment,
+    frame: UInt32(moment * Float(fps)),
     resolution: SIMD2(Float(width), Float(height)),
     userCount: 2,
     version: 4,
@@ -130,5 +141,37 @@ pixels.withUnsafeBufferPointer {
     bitmap.bitmapData!.update(from: $0.baseAddress!, count: pixels.count)
 }
 
-try bitmap.representation(using: .png, properties: [:])!.write(to: output)
-print("wrote", output.lastPathComponent)
+return bitmap.cgImage!
+}
+
+if frameCount <= 1 {
+    let bitmap = NSBitmapImageRep(cgImage: render(at: time))
+    try bitmap.representation(using: .png, properties: [:])!.write(to: output)
+    print("wrote", output.lastPathComponent)
+} else {
+    guard let destination = CGImageDestinationCreateWithURL(
+        output as CFURL,
+        UTType.png.identifier as CFString,
+        frameCount,
+        nil
+    ) else {
+        fatalError("could not create \(output.path)")
+    }
+
+    CGImageDestinationSetProperties(destination, [
+        kCGImagePropertyPNGDictionary: [kCGImagePropertyAPNGLoopCount: 0]
+    ] as CFDictionary)
+
+    for index in 0..<frameCount {
+        let moment = time + Float(index) / Float(fps)
+        CGImageDestinationAddImage(destination, render(at: moment), [
+            kCGImagePropertyPNGDictionary: [kCGImagePropertyAPNGDelayTime: 1 / fps]
+        ] as CFDictionary)
+    }
+
+    guard CGImageDestinationFinalize(destination) else {
+        fatalError("could not write \(output.path)")
+    }
+
+    print("wrote", output.lastPathComponent, "(\(frameCount) frames)")
+}
