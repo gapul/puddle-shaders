@@ -3,6 +3,8 @@
 Metal wallpapers for [Puddle](https://github.com/gapul/Puddle). Each `.metal` file is one
 wallpaper: Puddle compiles it at runtime and hot-reloads it when it changes.
 
+Gallery: **https://gapul.github.io/puddle-shaders/**
+
 ## Install
 
 In Puddle: **Add Wallpaper → From URL…**, and give it the address of a release asset. Or from
@@ -50,6 +52,12 @@ $ python3 tools/bake_world_sdf.py
 
 Do not hand-edit the tables, and do not run a decimator over them: the shader indexes them by
 exact dimensions.
+
+## The gallery
+
+`tools/build-site.py` generates it from `index.json` — the same file Puddle browses — and CI
+deploys it to Pages on every push. Neither is written by hand, so the site and the catalog in
+the app cannot drift apart.
 
 ## License
 
