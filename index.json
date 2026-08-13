@@ -9,7 +9,8 @@
       "author": "gapul",
       "url": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/dotmatrix.metal",
       "preview": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/dotmatrix.jpg",
-      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/dotmatrix.mp4"
+      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/dotmatrix.mp4",
+      "qualityHintIndex": 1
     },
     {
       "id": "worldmap",
@@ -18,7 +19,8 @@
       "author": "gapul",
       "url": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/worldmap.zip",
       "preview": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/worldmap.jpg",
-      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/worldmap.mp4"
+      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/worldmap.mp4",
+      "qualityHintIndex": 1
     },
     {
       "id": "globe",
@@ -27,7 +29,8 @@
       "author": "gapul",
       "url": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/globe.zip",
       "preview": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/globe.jpg",
-      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/globe.mp4"
+      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/globe.mp4",
+      "qualityHintIndex": 1
     },
     {
       "id": "constellation",
@@ -36,7 +39,8 @@
       "author": "gapul",
       "url": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/constellation.metal",
       "preview": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/constellation.jpg",
-      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/constellation.mp4"
+      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/constellation.mp4",
+      "qualityHintIndex": 1
     },
     {
       "id": "topographic",
@@ -45,7 +49,8 @@
       "author": "gapul",
       "url": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/topographic.metal",
       "preview": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/topographic.jpg",
-      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/topographic.mp4"
+      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/topographic.mp4",
+      "qualityHintIndex": 1
     },
     {
       "id": "aurora",
@@ -54,7 +59,8 @@
       "author": "gapul",
       "url": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/aurora.metal",
       "preview": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/aurora.jpg",
-      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/aurora.mp4"
+      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/aurora.mp4",
+      "qualityHintIndex": 1
     },
     {
       "id": "aurora-gradient",
@@ -63,25 +69,29 @@
       "author": "gapul",
       "url": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/aurora-gradient.metal",
       "preview": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/aurora-gradient.jpg",
-      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/aurora-gradient.mp4"
+      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/aurora-gradient.mp4",
+      "qualityHintIndex": 1
     },
     {
       "id": "rose-pine",
-      "name": "Ros\u00e9 Pine",
+      "name": "Rosé Pine",
       "description": "Flat palette study.",
       "author": "gapul",
       "url": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/rose-pine.metal",
       "preview": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/rose-pine.jpg",
-      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/rose-pine.mp4"
+      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/rose-pine.mp4",
+      "qualityHintIndex": 1
     },
     {
       "id": "audio-bars",
       "name": "Audio bars",
-      "description": "Spectrum bars from the system audio tap. Turn on \u201caudio\u201d for the wallpaper.",
+      "description": "Spectrum bars from the system audio tap.",
       "author": "gapul",
       "url": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/audio-bars.metal",
       "preview": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/audio-bars.jpg",
-      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/audio-bars.mp4"
+      "animation": "https://github.com/gapul/puddle-shaders/releases/download/v1.3.0/audio-bars.mp4",
+      "qualityHintIndex": 1,
+      "audio": true
     }
   ]
 }
