@@ -12,12 +12,20 @@ import json
 import shutil
 import sys
 import urllib.parse
+import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
 INDEX = ROOT / "index.json"
 REPO = "https://github.com/gapul/puddle-shaders"
+
+# Wallpapers of mine that live in their own repositories, listed here so there is one page to
+# look at rather than one per repository. Their catalogs are fetched, not copied: the entry on
+# the page is the entry the app installs, same as for the shaders in this one.
+GUESTS = [
+    "https://github.com/gapul/puddle-chess/releases/latest/download/index.json",
+]
 
 STYLE = """
 :root {
@@ -50,6 +58,11 @@ a { color: inherit; }
     text-decoration: none; font-size: .8rem; font-weight: 600;
 }
 .card h2 { font-size: 1rem; margin: 0 0 .2rem; }
+.tag {
+    vertical-align: .1em; margin-left: .4rem; padding: .1rem .4rem; border-radius: .3rem;
+    border: 1px solid var(--line); color: var(--muted); font-size: .65rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .04em;
+}
 .card p { margin: 0; font-size: .85rem; color: var(--muted); }
 .hero img, .hero video { display: block; width: 100%; border-radius: .7rem; border: 1px solid var(--line); }
 .meta { color: var(--muted); font-size: .9rem; }
@@ -93,9 +106,41 @@ def page(title, body):
 """
 
 
+def guests():
+    """The entries from the other catalogs, tagged with where they came from."""
+    found = []
+
+    for url in GUESTS:
+        with urllib.request.urlopen(url, timeout=30) as response:
+            catalog = json.load(response)
+
+        for entry in catalog["wallpapers"]:
+            # `https://github.com/owner/name/releases/…` — the repository the asset is published
+            # from, which is the repository to send people to.
+            found.append(entry | {"repo": "/".join(entry["url"].split("/")[:5])})
+
+    return found
+
+
+def source(entry):
+    return entry.get("repo", REPO)
+
+
+def note(entry):
+    """What a plugin needs that a shader does not."""
+    if entry.get("kind") != "plugin":
+        return ""
+
+    return f"""<p class="meta aside">This one is a plugin — native code, loaded into Puddle —
+so Puddle installs it only from a source named in <code>~/.config/puddle/install.toml</code>:</p>
+<pre>allow = [
+    "{html.escape(source(entry))}/releases/",
+]</pre>"""
+
+
 def main():
     index = json.loads(INDEX.read_text())
-    entries = index["wallpapers"]
+    entries = index["wallpapers"] + guests()
 
     if SITE.exists():
         shutil.rmtree(SITE)
@@ -105,7 +150,7 @@ def main():
         f"""<div class="card">
     <a href="w/{e['id']}.html"><img src="{html.escape(e['preview'])}" alt="" loading="lazy"></a>
     <div class="body">
-        <h2>{html.escape(e['name'])}</h2>
+        <h2>{html.escape(e['name'])}{' <span class="tag">plugin</span>' if e.get('kind') == 'plugin' else ''}</h2>
         <p>{html.escape(e.get('description', ''))}</p>
         <div class="row">
             <a class="go" href="w/{e['id']}.html">Details →</a>
@@ -119,8 +164,9 @@ def main():
     (SITE / "index.html").write_text(page(
         index["name"],
         f"""<h1>{html.escape(index['name'])}</h1>
-<p class="lede">Metal wallpapers for <a href="https://github.com/gapul/Puddle">Puddle</a>.
-Install them from the app's catalog, or one at a time from a terminal.</p>
+<p class="lede">Metal wallpapers for <a href="https://github.com/gapul/Puddle">Puddle</a>, and the
+plugins that keep them company. Install them from the app's catalog, or one at a time from a
+terminal.</p>
 <div class="grid">
 {cards}
 </div>""",
@@ -139,11 +185,12 @@ Install them from the app's catalog, or one at a time from a terminal.</p>
 <a class="install" href="puddle:install?url={urllib.parse.quote(entry['url'], safe='')}">Install in Puddle</a>
 <p class="meta aside">Hands it to Puddle, which asks before downloading. The address is
 passed straight through, so this works whether or not you have this catalog configured.</p>
+{note(entry)}
 <p class="meta">From a terminal instead:</p>
 <pre>{html.escape(install)}</pre>
 <p class="meta">Or in Puddle: <b>Wallpapers → Browse</b>. The asset is
 <a href="{html.escape(entry['url'])}">{html.escape(entry['url'].rsplit('/', 1)[-1])}</a>,
-and the source is on <a href="{REPO}">GitHub</a>.</p>""",
+and the source is on <a href="{html.escape(source(entry))}">GitHub</a>.</p>""",
         ))
 
     print(f"built {len(entries) + 1} pages into {SITE.relative_to(ROOT)}/")
